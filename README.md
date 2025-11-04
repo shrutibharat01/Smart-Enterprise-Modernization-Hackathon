@@ -32,39 +32,36 @@ This project is part of **i.mobilothon 5.0 (Hack2Skill x Volkswagen)** — focus
 
 ---
 
-## 🏗️ Architecture Overview
-
 +-----------------------+
-| Source Systems        |
-| SAP | CRM | IoT Edge  |
+|     Source Systems    |
+|  SAP | CRM | IoT Edge |
 +-----------------------+
-         ↓
-+-------------------+
-| FastAPI Ingestion |
-| Layer (Layer 0)   |
-+-------------------+
-         ↓
-+-------------------+
-| Delta Lake (S3)   |
-| Bronze → Silver   |
-| → Gold Layers     |
-+-------------------+
-         ↓
-+-------------------+
-| Databricks        |
-| LakeFlow / Jobs   |
-+-------------------+
-         ↓
-+--------------------------+
-| Databricks SQL/Dashboard |
-| AI Insights              |
-+--------------------------+
+           ↓
+   +-------------------+
+   |  FastAPI Ingestion|
+   |  Layer (Layer 0)  |
+   +-------------------+
+           ↓
+   +-------------------+
+   |   Delta Lake (S3) |
+   | Bronze → Silver → |
+   |     Gold Layers   |
+   +-------------------+
+           ↓
+   +-------------------+
+   |    Databricks     |
+   |  LakeFlow / Jobs  |
+   +-------------------+
+           ↓
+   +--------------------------+
+   | Databricks SQL / BI Dash |
+   |     + AI Insights        |
+   +--------------------------+
 
 
 ---
 
 ## 🧱 Project Structure
-
 Smart-Modernization-Hub/
 │
 ├── README.md
@@ -73,27 +70,27 @@ Smart-Modernization-Hub/
 ├── .env.example
 │
 ├── src/
-│ ├── main.py
-│ ├── connectors.py
-│ ├── storage.py
-│ ├── simulate_fleet.py
-│ ├── config.py
-│ └── init.py
+│   ├── main.py
+│   ├── connectors.py
+│   ├── storage.py
+│   ├── simulate_fleet.py
+│   ├── config.py
+│   └── __init__.py
 │
 ├── data/
-│ ├── bronze/
-│ ├── ingestion_log.jsonl
-│ └── samples/
+│   ├── bronze/
+│   ├── ingestion_log.jsonl
+│   └── samples/
 │
 ├── notebooks/
-│ ├── bronze_to_silver.py
-│ ├── silver_to_gold.py
-│ └── ai_forecast_demo.py
+│   ├── bronze_to_silver.py
+│   ├── silver_to_gold.py
+│   └── ai_forecast_demo.py
 │
 └── docs/
-├── ARCHITECTURE.md
-├── DEPLOYMENT.md
-└── API_REFERENCE.md
+    ├── ARCHITECTURE.md
+    ├── DEPLOYMENT.md
+    └── API_REFERENCE.md
 
 
 ---
