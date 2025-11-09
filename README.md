@@ -37,9 +37,9 @@ This project is a modular, end-to-end solution divided into the following parts:
 
 ## 🏗️ Architecture at a Glance
 
-![Architecture Diagram](Utils/Architecture_Diagram.jpg)
+![Architecture Diagram](Utils/Architecture_Diagram.png)
 
-![Wirefram Diagram](Utils/Wireframe.jpg)
+![Wirefram Diagram](Utils/Wireframe.png)
 
 *This diagram shows how raw data flows through ETL, ML modeling, and visualization before powering API/chatbot endpoints.*
 
@@ -62,22 +62,22 @@ Data moves from [Bronze] **raw** → [Silver] **cleansed** → [Gold] **analytic
 **Ingestion:**  
 Pulls data from SAP APIs, CRM CSVs on S3, and simulated IoT feeds.
 
-![Catalog Structure](Utils/Catalog_Structure.jpg)
+![Catalog Structure](Utils/Catalog_Structure.png)
 
 **Transformation:**  
 Cleans, validates, and joins all sources; output is the Silver layer.
 
-![Silver Layer](Utils/ETL_Pipeline.jpg)
+![Silver Layer](Utils/ETL_Pipeline.png)
 
 **Modeling:**  
 Trains/versions ML models with MLflow, stores artifacts in S3, deploys with Databricks Model Serving.
 
-![MLflow Experiments](Utils/ML_Model.jpg)
+![MLflow Experiments](Utils/ML_Model.png)
 
 **Dashboards:**  
 Final Gold tables power live dashboards with direct business KPIs.
 
-![Dashboard Example](Utils/Dashboard_1.jpg)
+![Dashboard Example](Utils/Dashboard_1.png)
 
 ---
 
