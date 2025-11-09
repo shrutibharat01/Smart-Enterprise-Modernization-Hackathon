@@ -19,7 +19,7 @@ This project is a modular, end-to-end solution divided into the following parts:
 ## ⚙️ Technology Stack
 
 - **Languages:** Python, PySpark, SQL
-- **Frameworks & Tools:** Databricks, Delta Lake, MLflow, FastAPI (for APIs)
+- **Frameworks & Tools:** Databricks, Delta Lake, MLflow, FastAPI (for APIs), Lakeflow
 - **Cloud & Storage:** AWS S3 (for artifact storage), Databricks Lakehouse
 - **Data & Visualization:** Databricks SQL Dashboards, Jupyter/Databricks Notebooks
 
