@@ -62,7 +62,7 @@ Data moves from [Bronze] **raw** → [Silver] **cleansed** → [Gold] **analytic
 **Ingestion:**  
 Pulls data from SAP APIs, CRM CSVs on S3, and simulated IoT feeds.
 
-![Catalog Structure](Utils/Catalog_Structure.png)
+![Catalog Structure](Utils/Unity_Catalog.png)
 
 **Transformation:**  
 Cleans, validates, and joins all sources; output is the Silver layer.
