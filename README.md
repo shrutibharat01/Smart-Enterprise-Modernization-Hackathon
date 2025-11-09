@@ -1,6 +1,16 @@
-# 🚀 Smart Enterprise Modernization Hackathon
+# 🚗 Smart Enterprise Modernization Hackathon
 
-Welcome to the **Smart Enterprise Modernization Hackathon** project! This repository contains a comprehensive data engineering and AI pipeline built on Databricks, demonstrating cutting-edge technologies in Big Data, Delta Lake, MLflow, and AI integrations. The project focuses on transforming and modernizing enterprise vehicle fleet data for actionable insights.
+Welcome to a unified cloud analytics platform that brings **enterprise fleet operational data to life**—from raw feeds to actionable dashboards and AI predictions—using Databricks Lakehouse, Delta Lake, and MLflow.
+
+---
+
+## ⭐ What Makes This Project Unique?
+
+- Real-time, multi-source ingestion (APIs, S3, IoT)
+- Automated and auditable ETL pipeline (Bronze → Silver → Gold)
+- Full ML lifecycle: training, tuning, registry, serving
+- Live business dashboards for KPIs & trends
+- AI chatbot and API endpoint code ready for plug-and-play extensibility
 
 ---
 
@@ -20,35 +30,86 @@ This project is a modular, end-to-end solution divided into the following parts:
 
 - **Languages:** Python, PySpark, SQL
 - **Frameworks & Tools:** Databricks, Delta Lake, MLflow, FastAPI (for APIs), Lakeflow
-- **Cloud & Storage:** AWS S3 (for artifact storage), Databricks Lakehouse
-- **Data & Visualization:** Databricks SQL Dashboards, Jupyter/Databricks Notebooks
+- **Cloud & Storage:** AWS S3, IAM, Databricks Lakehouse
+- **Data & Visualization:** Databricks SQL Dashboards, Databricks Notebooks
 
 ---
 
-## 👩‍💻 Getting Started
+## 🏗️ Architecture at a Glance
 
-### Prerequisites
+![Architecture Diagram](Utils/Architecture_Diagram.jpg)
 
-- Python 3.8+
-- Databricks Workspace (configured with Delta Lake & MLflow)
-- Access to AWS S3 for model/artifact storage (optional)
-- API keys/secrets stored securely in Databricks secret scope
+![Wirefram Diagram](Utils/Wireframe.jpg)
 
-### Installation
+*This diagram shows how raw data flows through ETL, ML modeling, and visualization before powering API/chatbot endpoints.*
 
-1. Clone the repository:
-2. Create and activate your virtual environment:
-3. Install dependencies:
+---
+
+## 📚 Data Layers (Medallion Architecture)
+
+| Layer   | Tables                | What’s here?                        |
+|---------|-----------------------|-------------------------------------|
+| Bronze  | Raw source tables     | Ingested SAP, CRM, Fleet/IoT data   |
+| Silver  | Cleaned, conformed    | Duplicate removal, schema checks    |
+| Gold    | Analytics tables      | Business metrics, ML-ready datasets |
+
+Data moves from [Bronze] **raw** → [Silver] **cleansed** → [Gold] **analytics-ready**, supporting traceability and rapid queries.
+
+---
+
+## ⚙️ Pipeline Stages (with Images)
+
+**Ingestion:**  
+Pulls data from SAP APIs, CRM CSVs on S3, and simulated IoT feeds.
+
+![Catalog Structure](Utils/Catalog_Structure.jpg)
+
+**Transformation:**  
+Cleans, validates, and joins all sources; output is the Silver layer.
+
+![Silver Layer](Utils/ETL_Pipeline.jpg)
+
+**Modeling:**  
+Trains/versions ML models with MLflow, stores artifacts in S3, deploys with Databricks Model Serving.
+
+![MLflow Experiments](Utils/ML_Model.jpg)
+
+**Dashboards:**  
+Final Gold tables power live dashboards with direct business KPIs.
+
+![Dashboard Example](Utils/Dashboard_1.jpg)
+
+---
+
+## 🤖 Future-ready Extensions
+
+- **AI Chatbot & API:**  
+  Code included for a natural language data assistant (ChatGPT/OpenAI) and FastAPI endpoints—easily deployable when API keys and schedule permit.
+
+---
+
+## 🛠️ Project Structure
+
+Smart-Enterprise-Modernization-Hackathon/
+├── Notebooks/
+├── Unity_Catalog/
+├── MLflow/
+├── Dashboards/
+├── Serving/
+├── AWS/
+├── requirements.txt
+├── README.md
+
 
 
 ---
 
-## 🚀 Usage
+## 🚀 Quickstart
 
-- Launch the notebooks sequentially from data ingestion to transformation inside Databricks.
-- Train and manage ML models via integrated MLflow experiments.
-- Explore existing interactive dashboards in Databricks SQL for live KPI insights.
-- Develop and deploy APIs or Databricks Apps (planned) for external integration.
+1. Clone the repo, import notebooks to Databricks.
+2. Set up Unity Catalog, MLflow, S3 credentials.
+3. Run ETL, train a model, and explore dashboards.
+4. (Optionally) Deploy the chatbot or API endpoint.
 
 ---
 
@@ -71,6 +132,7 @@ Contributions, issues, and feature requests are welcome! Feel free to open issue
 
 **Shruti Bharat**  
 📧 bharatshruti02@gmail.com  
-🌐 [LinkedIn](https://www.linkedin.com/in/Shruti_Bharat) | [GitHub](https://github.com/shrutibharat01) |
+🌐 [LinkedIn](https://www.linkedin.com/in/Shruti_Bharat) | [GitHub](https://github.com/shrutibharat01)
 
 ---
+
