@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import os
 
 # -----------------------------
 # 🎯 App Title and Description
@@ -9,16 +10,17 @@ st.set_page_config(page_title="Vehicle Sales Prediction", page_icon="🚗", layo
 
 st.title("🚗 Vehicle Sales Prediction App")
 st.markdown("""
-Enter the vehicle details below to predict its expected sales value.  
+Enter the vehicle details below to predict its expected sales value.  
 This model uses a trained **Random Forest Regressor** saved locally as a `.pkl` file.
 """)
 
 # -----------------------------
-# 🔧 Load Local Pickle Model
+# 🔧 Load Pickle Model from repo root
 # -----------------------------
 @st.cache_resource
 def load_model():
-    model_path = "D:\Python\model.pkl"  # <- your local model file
+    # Get file path relative to this script
+    model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
     with open(model_path, "rb") as f:
         model = pickle.load(f)
     return model
