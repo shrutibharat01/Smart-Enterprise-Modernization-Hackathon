@@ -8,4 +8,4 @@ databricks-sdk
 python-dotenv
 streamlit
 scikit-learn
-python
+python-3.11
