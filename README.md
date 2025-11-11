@@ -158,9 +158,9 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 **Powered by Gold Layer Aggregation**
 
 ### Dashboard KPIs:
-- 🚘 Total Sales by Region  
-- 💰 Average Fleet Maintenance Cost  
-- 🏭 Manufacturer-Wise Performance  
+- 🚘 Car Sales by Region  
+- 💰 Average Mileage per Manufacturer
+- 🏭 Fuel Type Distribution  
 - 📈 Year-over-Year Growth  
 
 Auto-refreshes with every **LakeFlow ETL** run.
@@ -257,10 +257,9 @@ Smart-Enterprise-Modernization-Hackathon/
 ---
 
 ## ✨ Future Enhancements
-- 🔁 Integration with AWS Glue Data Catalog  
+- 🔁 Integration with AI Chatbots with Gold layer data
 - ☁️ Deploy model via Databricks Model Serving  
 - 📱 Multi-page Streamlit dashboard  
-- 📊 Real-time Gold layer sync using LakeFlow triggers  
 
 ---
 
