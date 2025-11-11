@@ -54,7 +54,7 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 
 ## 🔁 End-to-End Project Flow
 
-<p> <img src="Utils/Porject_Flow.png" width="750" alt="ETL Pipeline"/> </p>
+<p> <img src="Utils/Project_Flow.png" width="750" alt="Project Flow"/> </p>
 
 ---
 
