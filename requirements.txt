@@ -7,7 +7,7 @@ requests
 databricks-sdk
 python-dotenv
 streamlit
-scikit-learn
+scikit-learn==1.6.1
 boto3
 pandas
 plotly
