@@ -21,6 +21,19 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 - 🎯 **An interactive Streamlit dashboard** (powered by AWS S3 artifacts)
 - 📊 **A Databricks SQL dashboard** for business insights
 
+
+---
+
+### 🚀 Live Project Links
+
+| Platform | Description | Link |
+|-----------|--------------|------|
+| 🌐 **Streamlit App** | Interactive UI for real-time car sales prediction | [Launch App](https://requirementstxt-sifacvjjeifdr4kdnjkdjd.streamlit.app/#profit-sensitivity-overview) |
+| 📊 **Databricks SQL Dashboard** | Real-time analytics on Gold Layer (Sales, Fleet, Region) | [View Dashboard](https://dbc-153742af-261e.cloud.databricks.com/dashboardsv3/01f0bf40fcd41678a9f3b2f0aad7aaf4/published?o=2287075381141686&f_page1%7E9aaa3ae5=70492%7E335797) |
+
+> 🪶 *Note: Both dashboards are live and auto-refresh based on LakeFlow pipeline runs.*
+
+
 ---
 
 ## 🏗️ Architecture Overview
