@@ -8,3 +8,7 @@ databricks-sdk
 python-dotenv
 streamlit
 scikit-learn
+boto3
+pandas
+plotly
+joblib
