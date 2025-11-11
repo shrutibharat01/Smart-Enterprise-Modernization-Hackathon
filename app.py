@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 st.title("🚗 Smart Enterprise Car Sales Prediction")
-st.markdown(""" Welcome to the **Smart Enterprise Modernization Hackathon Demo App**.  
+st.markdown("""Welcome to the **Smart Enterprise Modernization Hackathon Demo App**.  
 Predict future car sales using the trained Random Forest model from your Databricks ML pipeline.""")
 
 # -----------------------------
@@ -49,7 +49,7 @@ def load_model_and_metrics():
             Key="ML_Model_Output_2/model_metrics.json"
         )
         metrics = json.loads(metrics_obj["Body"].read())
-        st.info(f"📊 Metrics loaded (RMSE: ₹{metrics['rmse']:,.0f}, R²: {metrics['r2']:.3f})")
+        st.info(f"📊 Metrics loaded (RMSE: ₹{metrics['rmse']:,.0f},  R²: {metrics['r2']:.3f})")
     except Exception as e:
         st.warning(f"⚠️ Could not load metrics from S3. Using default RMSE = ₹{metrics['rmse']:,.0f}")
         print("Metrics load error:", e)
@@ -95,7 +95,7 @@ if submitted:
     st.divider()
     st.subheader("📈 Prediction Results")
 
-    # Create dataframe for model input
+    # Create user input DataFrame
     input_data = pd.DataFrame({
         "vehicle_type": [vehicle_type],
         "fuel_type": [fuel_type],
@@ -109,17 +109,36 @@ if submitted:
         "competitor_discount": [competitor_discount]
     })
 
+    # ✅ Ensure all model-required columns exist
+    if hasattr(model, "feature_names_in_"):
+        expected_cols = list(model.feature_names_in_)
+    else:
+        # fallback if pipeline doesn’t expose feature_names_in_
+        expected_cols = input_data.columns.tolist()
+
+    for col in expected_cols:
+        if col not in input_data.columns:
+            input_data[col] = np.nan  # fill missing ones safely
+
+    # Reorder columns to match model training order
+    input_data = input_data[expected_cols]
+
     # Make prediction
-    predicted_sales = model.predict(input_data)[0]
+    try:
+        predicted_sales = model.predict(input_data)[0]
+    except Exception as e:
+        st.error("❌ Prediction failed. Please verify model column alignment.")
+        st.exception(e)
+        st.stop()
 
     # Confidence interval bounds
     lower_bound = max(predicted_sales - CONFIDENCE_INTERVAL, 0)
     upper_bound = predicted_sales + CONFIDENCE_INTERVAL
 
-    # Display prediction
+    # Display prediction prominently
     st.markdown(
         f"""
-        <div style='text-align:center; font-size:32px; font-weight:700; color:#2E86C1;'>
+        <div style='text-align:center; font-size:34px; font-weight:800; color:#1F618D;'>
             🔮 Predicted Monthly Sales: ₹{predicted_sales:,.0f}
         </div>
         <div style='text-align:center; font-size:18px; color:gray;'>
@@ -134,9 +153,9 @@ if submitted:
     # -----------------------------
     # 📊 BUSINESS VISUALIZATIONS
     # -----------------------------
+    st.markdown("### 📈 Business Impact Simulations")
 
     # Chart 1: Marketing spend vs predicted sales
-    st.markdown("### 📉 Impact of Marketing Spend on Predicted Sales")
     marketing_range = np.linspace(1, 100, 20)
     df_marketing = pd.DataFrame({
         "Marketing Spend (₹ Lakhs)": marketing_range,
@@ -152,11 +171,10 @@ if submitted:
                 "marketing_spend": [m],
                 "previous_sales": [previous_sales],
                 "competitor_discount": [competitor_discount]
-            }))[0]
+            }).reindex(columns=expected_cols, fill_value=np.nan))[0]
             for m in marketing_range
         ]
     })
-
     fig1 = px.line(
         df_marketing,
         x="Marketing Spend (₹ Lakhs)",
@@ -168,7 +186,6 @@ if submitted:
     st.plotly_chart(fig1, use_container_width=True)
 
     # Chart 2: Competitor discount vs sales
-    st.markdown("### 🏷️ Effect of Competitor Discounts on Sales")
     discount_range = np.linspace(0, 50, 15)
     df_discount = pd.DataFrame({
         "Competitor Discount (%)": discount_range,
@@ -184,11 +201,10 @@ if submitted:
                 "marketing_spend": [marketing_spend],
                 "previous_sales": [previous_sales],
                 "competitor_discount": [d]
-            }))[0]
+            }).reindex(columns=expected_cols, fill_value=np.nan))[0]
             for d in discount_range
         ]
     })
-
     fig2 = px.bar(
         df_discount,
         x="Competitor Discount (%)",
