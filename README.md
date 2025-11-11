@@ -1,14 +1,14 @@
-<h1 align="center">🚗 Smart Enterprise Modernization – End-to-End Data & AI Pipeline</h1>
+<h1>🚗 Smart Enterprise Modernization – End-to-End Data & AI Pipeline</h1>
 
-<p align="center">
+<p>
   <i>Submission for <a href="https://vision.hack2skill.com/event/imobilothon-5">IMOBILOTHON 5.0 Hackathon</a> organized by Hack2Skill</i><br>
   <b>Built using Databricks • AWS S3 • Streamlit • Machine Learning • SQL Dashboard</b>
 </p>
 
 ---
 
-<p align="center">
-  <img src="Utils/hackathon_banner.png" width="800" alt="Hackathon Banner"/>
+<p>
+  <img src="Utils/Banner.png" width="800" alt="Hackathon Banner"/>
 </p>
 
 ---
@@ -25,8 +25,8 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 
 ## 🏗️ Architecture Overview
 
-<p align="center">
-  <img src="Utils/medallion_architecture.png" width="750" alt="Medallion Architecture"/>
+<p>
+  <img src="Utils/Medallion_Architecture.png" width="750" alt="Medallion Architecture"/>
 </p>
 
 ### 💎 Medallion Architecture
@@ -39,15 +39,14 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 
 ---
 
-## 🔁 End-to-End Data Flow
+## 🔁 End-to-End Project Flow
 
-
-
+<p> <img src="Utils/Porject_Flow.png" width="750" alt="ETL Pipeline"/> </p>
 
 ---
 
 ## ⚙️ ETL Workflow
-<p align="center"> <img src="Utils/etl_pipeline.png" width="750" alt="ETL Pipeline"/> </p>
+<p> <img src="Utils/ETL_Pipeline.png" width="750" alt="ETL Pipeline"/> </p>
 
 ### Data Sources:
 - CRM: Customer and vehicle details
@@ -82,7 +81,7 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 
 ## 🤖 Machine Learning Model (Random Forest Regression)
 <p align="center">
-  <img src="assets/ml_training.png" width="750" alt="ML Training"/>
+  <img src="Utils/ML_Model.png" width="750" alt="ML Training"/>
 </p>
 
 **Input:** Gold layer table — `enterprise_modernization.gold.gold_car_sales_analytics`  
@@ -103,9 +102,23 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 ---
 
 ## ☁️ Cloud Integration: AWS S3 + Streamlit
-<p align="center">
-  <img src="assets/streamlit_dashboard.png" width="750" alt="Streamlit Dashboard"/>
+<p>
+  <img src="Utils/Streamlit_Dashboard1.png" width="750" alt="Streamlit Dashboard"/>
 </p>
+
+<p>
+  <img src="Utils/Streamlit_Dashboard2.png" width="750" alt="Streamlit Dashboard"/>
+</p>
+
+<p>
+  <img src="Utils/Streamlit_Dashboard3.png" width="750" alt="Streamlit Dashboard"/>
+</p>
+
+<p>
+  <img src="Utils/Streamlit_Dashboard4.png" width="750" alt="Streamlit Dashboard"/>
+</p>
+
+----
 
 | Component | Description |
 |------------|--------------|
@@ -117,9 +130,17 @@ Once aggregated into the **Gold Layer**, the data powers a **Machine Learning mo
 ---
 
 ## 📊 Databricks SQL Dashboard
-<p align="center">
-  <img src="assets/databricks_sql_dashboard.png" width="750" alt="Databricks SQL Dashboard"/>
+<p>
+  <img src="Utils/SQL_Dashboard1.png" width="750" alt="Databricks SQL Dashboard"/>
 </p>
+
+
+<p>
+  <img src="Utils/SQL_Dashboard2.png" width="750" alt="Databricks SQL Dashboard"/>
+</p>
+
+
+----
 
 **Powered by Gold Layer Aggregation**
 
@@ -138,9 +159,9 @@ Auto-refreshes with every **LakeFlow ETL** run.
 | Category | Tools / Services |
 |-----------|-----------------|
 | 💾 Data Ingestion | Databricks Delta Tables, Spark |
-| 🧹 Transformation | PySpark, SQL, LakeFlow |
-| 🧠 Machine Learning | Scikit-learn, MLflow |
-| ☁️ Cloud Storage | AWS S3 |
+| 🧹 Transformation | PySpark, SQL, LakeFlow, Python |
+| 🧠 Machine Learning | Scikit-learn, MLflow, ML |
+| ☁️ Cloud Storage | AWS S3, IAM |
 | 💡 Visualization | Streamlit, Plotly, Databricks SQL |
 | 🔐 Credentials | Streamlit Secrets.toml |
 
@@ -216,8 +237,8 @@ Smart-Enterprise-Modernization-Hackathon/
 ---
 
 ## 🌐 Architecture Summary
-<p align="center">
-  <img src="assets/architecture_summary.png" width="800" alt="Architecture Summary Diagram"/>
+<p>
+  <img src="Utils/Architecture.png" width="800" alt="Architecture Summary Diagram"/>
 </p>
 
 ---
@@ -236,12 +257,7 @@ Smart-Enterprise-Modernization-Hackathon/
 Data Engineer • Machine Learning Enthusiast • Hackathon Innovator  
 [GitHub](https://github.com/shrutibharat01) • [LinkedIn](https://www.linkedin.com/in/shrutibharat)  
 
-<p align="center">
+<p>
   <i>Built with 💙 for the Smart Enterprise Modernization Hackathon • Transforming Data into Intelligence 🚀</i>
 </p>
 ```
-
-***
-
-Would you like the README to include installation and setup instructions for running the Streamlit app and model locally?
-
