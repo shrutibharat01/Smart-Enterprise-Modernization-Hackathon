@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
-import boto3
-import io
-import json
+import joblib, boto3, io, json
+import plotly.graph_objects as go
 import plotly.express as px
 
 # -----------------------------
@@ -13,19 +11,23 @@ import plotly.express as px
 st.set_page_config(
     page_title="Car Sales Prediction Dashboard",
     page_icon="🚗",
-    layout="centered"
+    layout="wide"
 )
 
-st.title("🚗 Smart Enterprise Car Sales Prediction")
-st.markdown("""Welcome to the **Smart Enterprise Modernization Hackathon Demo App**.  
-Predict future car sales using the trained Random Forest model from your Databricks ML pipeline.""")
+st.markdown(
+    "<h1 style='text-align:center;color:#1A5276;'>🚗 Smart Enterprise Car Sales Prediction</h1>",
+    unsafe_allow_html=True,
+)
+st.write(
+    "Welcome to the **Smart Enterprise Modernization Hackathon Demo App** — "
+    "predict monthly car sales and visualize key business drivers."
+)
 
 # -----------------------------
 # 🔐 LOAD MODEL & METRICS FROM S3
 # -----------------------------
 @st.cache_resource
 def load_model_and_metrics():
-    """Load ML model (.pkl) and metrics (JSON) from S3."""
     s3 = boto3.client(
         "s3",
         aws_access_key_id=st.secrets["aws_access_key"],
@@ -34,68 +36,56 @@ def load_model_and_metrics():
     )
 
     # Load model
-    model_obj = s3.get_object(
+    obj = s3.get_object(
         Bucket=st.secrets["s3_bucket"],
         Key=st.secrets["s3_model_path"]
     )
-    model_bytes = io.BytesIO(model_obj["Body"].read())
-    model = joblib.load(model_bytes)
+    model = joblib.load(io.BytesIO(obj["Body"].read()))
 
-    # Load metrics JSON
-    metrics = {"rmse": 9000, "mae": None, "r2": None}
+    # Load metrics
+    metrics = {"rmse": 9000, "r2": 0.85}
     try:
-        metrics_obj = s3.get_object(
+        mobj = s3.get_object(
             Bucket=st.secrets["s3_bucket"],
             Key="ML_Model_Output_2/model_metrics.json"
         )
-        metrics = json.loads(metrics_obj["Body"].read())
-        st.info(f"📊 Metrics loaded (RMSE: ₹{metrics['rmse']:,.0f},  R²: {metrics['r2']:.3f})")
-    except Exception as e:
-        st.warning(f"⚠️ Could not load metrics from S3. Using default RMSE = ₹{metrics['rmse']:,.0f}")
-        print("Metrics load error:", e)
+        metrics = json.loads(mobj["Body"].read())
+    except Exception:
+        st.warning("⚠️ Metrics file not found; using defaults.")
 
     return model, metrics
 
 
-with st.spinner("Loading model & metrics from S3..."):
+with st.spinner("Loading model & metrics from S3 …"):
     model, metrics = load_model_and_metrics()
-
 st.success("✅ Model and metrics successfully loaded from AWS S3")
-
 CONFIDENCE_INTERVAL = metrics.get("rmse", 9000)
 
 # -----------------------------
-# 🧮 USER INPUT FORM
+# 🎛️ SIDEBAR USER INPUTS
 # -----------------------------
-st.header("📋 Enter Vehicle & Market Details")
+st.sidebar.header("📋 Input Vehicle & Market Details")
 
-with st.form("prediction_form"):
-    col1, col2 = st.columns(2)
+vehicle_type = st.sidebar.selectbox("Vehicle Type", ["SUV", "Sedan", "Hatchback", "Truck"])
+fuel_type = st.sidebar.selectbox("Fuel Type", ["Petrol", "Diesel", "Electric", "Hybrid"])
+transmission = st.sidebar.selectbox("Transmission", ["Manual", "Automatic"])
+engine_size = st.sidebar.number_input("Engine Size (CC)", 800, 5000, 1500, step=100)
+mileage = st.sidebar.number_input("Mileage (km/l)", 5.0, 40.0, 15.0, step=0.5)
+year = st.sidebar.slider("Manufacture Year", 2000, 2025, 2022)
+region = st.sidebar.selectbox("Region", ["North", "South", "East", "West"])
+marketing_spend = st.sidebar.number_input("Marketing Spend (₹ Lakhs)", 1.0, 100.0, 10.0, step=0.5)
+previous_sales = st.sidebar.number_input("Previous Month Sales", 0, 10000, 2500, step=100)
+competitor_discount = st.sidebar.number_input("Competitor Discount (%)", 0.0, 50.0, 10.0, step=1.0)
 
-    with col1:
-        vehicle_type = st.selectbox("Vehicle Type", ["SUV", "Sedan", "Hatchback", "Truck"])
-        fuel_type = st.selectbox("Fuel Type", ["Petrol", "Diesel", "Electric", "Hybrid"])
-        transmission = st.selectbox("Transmission", ["Manual", "Automatic"])
-        engine_size = st.number_input("Engine Size (in CC)", min_value=800, max_value=5000, value=1500, step=100)
-        mileage = st.number_input("Mileage (km/l)", min_value=5.0, max_value=40.0, value=15.0, step=0.5)
-
-    with col2:
-        year = st.slider("Manufacture Year", 2000, 2025, 2022)
-        region = st.selectbox("Region", ["North", "South", "East", "West"])
-        marketing_spend = st.number_input("Marketing Spend (₹ Lakhs)", min_value=1.0, max_value=100.0, value=10.0, step=0.5)
-        previous_sales = st.number_input("Previous Month Sales", min_value=0, max_value=10000, value=2500, step=100)
-        competitor_discount = st.number_input("Competitor Discount (%)", min_value=0.0, max_value=50.0, value=10.0, step=1.0)
-
-    submitted = st.form_submit_button("🔮 Predict Sales")
+predict_button = st.sidebar.button("🔮 Predict Sales")
 
 # -----------------------------
-# 🚀 PREDICTION LOGIC
+# 🚀 PREDICTION
 # -----------------------------
-if submitted:
+if predict_button:
     st.divider()
     st.subheader("📈 Prediction Results")
 
-    # Create user input DataFrame
     input_data = pd.DataFrame({
         "vehicle_type": [vehicle_type],
         "fuel_type": [fuel_type],
@@ -109,58 +99,93 @@ if submitted:
         "competitor_discount": [competitor_discount]
     })
 
-    # ✅ Ensure all model-required columns exist
+    # Align columns with model
     if hasattr(model, "feature_names_in_"):
-        expected_cols = list(model.feature_names_in_)
-    else:
-        # fallback if pipeline doesn’t expose feature_names_in_
-        expected_cols = input_data.columns.tolist()
+        exp_cols = list(model.feature_names_in_)
+        for c in exp_cols:
+            if c not in input_data.columns:
+                input_data[c] = np.nan
+        input_data = input_data[exp_cols]
 
-    for col in expected_cols:
-        if col not in input_data.columns:
-            input_data[col] = np.nan  # fill missing ones safely
+    pred = model.predict(input_data)[0]
+    lower, upper = max(pred - CONFIDENCE_INTERVAL, 0), pred + CONFIDENCE_INTERVAL
 
-    # Reorder columns to match model training order
-    input_data = input_data[expected_cols]
+    # --- Central KPI gauge ---
+    colA, colB, colC = st.columns([1, 2, 1])
+    with colB:
+        fig_gauge = go.Figure(
+            go.Indicator(
+                mode="gauge+number+delta",
+                value=pred,
+                delta={'reference': (lower + upper) / 2, 'increasing': {'color': "#2E86C1"}},
+                gauge={
+                    'axis': {'range': [0, upper * 1.2]},
+                    'bar': {'color': "#1F618D"},
+                    'steps': [
+                        {'range': [0, lower], 'color': "#AED6F1"},
+                        {'range': [lower, upper], 'color': "#5DADE2"}
+                    ],
+                    'threshold': {'line': {'color': "red", 'width': 4}, 'thickness': 0.75, 'value': upper}
+                },
+                title={'text': "Predicted Monthly Sales (₹)"}
+            )
+        )
+        st.plotly_chart(fig_gauge, use_container_width=True)
 
-    # Make prediction
-    try:
-        predicted_sales = model.predict(input_data)[0]
-    except Exception as e:
-        st.error("❌ Prediction failed. Please verify model column alignment.")
-        st.exception(e)
-        st.stop()
-
-    # Confidence interval bounds
-    lower_bound = max(predicted_sales - CONFIDENCE_INTERVAL, 0)
-    upper_bound = predicted_sales + CONFIDENCE_INTERVAL
-
-    # Display prediction prominently
     st.markdown(
-        f"""
-        <div style='text-align:center; font-size:34px; font-weight:800; color:#1F618D;'>
-            🔮 Predicted Monthly Sales: ₹{predicted_sales:,.0f}
-        </div>
-        <div style='text-align:center; font-size:18px; color:gray;'>
-            (Expected range: ₹{lower_bound:,.0f} - ₹{upper_bound:,.0f})
-        </div>
-        """,
+        f"<p style='text-align:center;font-size:20px;color:gray;'>Expected range: ₹{lower:,.0f} – ₹{upper:,.0f}</p>",
         unsafe_allow_html=True
     )
 
-    st.divider()
-
     # -----------------------------
-    # 📊 BUSINESS VISUALIZATIONS
+    # 🌈 BUSINESS VISUALS
     # -----------------------------
-    st.markdown("### 📈 Business Impact Simulations")
+    st.subheader("📊 Business Impact Simulations")
 
-    # Chart 1: Marketing spend vs predicted sales
-    marketing_range = np.linspace(1, 100, 20)
-    df_marketing = pd.DataFrame({
-        "Marketing Spend (₹ Lakhs)": marketing_range,
-        "Predicted Sales": [
-            model.predict(pd.DataFrame({
+    # Marketing Spend & Discount Impact – dual axis line
+    m_range = np.linspace(1, 100, 20)
+    d_range = np.linspace(0, 50, 20)
+
+    df = pd.DataFrame({
+        "Marketing Spend (₹ Lakhs)": m_range,
+        "Competitor Discount (%)": d_range
+    })
+    df["Predicted Sales"] = [
+        model.predict(pd.DataFrame({
+            "vehicle_type": [vehicle_type],
+            "fuel_type": [fuel_type],
+            "transmission": [transmission],
+            "engine_size": [engine_size],
+            "mileage": [mileage],
+            "year": [year],
+            "region": [region],
+            "marketing_spend": [m],
+            "previous_sales": [previous_sales],
+            "competitor_discount": [d]
+        }).reindex(columns=exp_cols, fill_value=np.nan))[0]
+        for m, d in zip(m_range, d_range)
+    ]
+
+    fig_line = px.scatter_3d(
+        df,
+        x="Marketing Spend (₹ Lakhs)",
+        y="Competitor Discount (%)",
+        z="Predicted Sales",
+        color="Predicted Sales",
+        color_continuous_scale="Viridis",
+        title="Predicted Sales vs Marketing Spend & Competitor Discount"
+    )
+    st.plotly_chart(fig_line, use_container_width=True)
+
+    # Heatmap for quick business overview
+    st.markdown("### 🔥 Sales Sensitivity Heatmap")
+    m_vals = np.linspace(5, 100, 10)
+    d_vals = np.linspace(0, 50, 10)
+    heat_data = np.zeros((len(m_vals), len(d_vals)))
+
+    for i, m in enumerate(m_vals):
+        for j, d in enumerate(d_vals):
+            heat_data[i, j] = model.predict(pd.DataFrame({
                 "vehicle_type": [vehicle_type],
                 "fuel_type": [fuel_type],
                 "transmission": [transmission],
@@ -170,53 +195,17 @@ if submitted:
                 "region": [region],
                 "marketing_spend": [m],
                 "previous_sales": [previous_sales],
-                "competitor_discount": [competitor_discount]
-            }).reindex(columns=expected_cols, fill_value=np.nan))[0]
-            for m in marketing_range
-        ]
-    })
-    fig1 = px.line(
-        df_marketing,
-        x="Marketing Spend (₹ Lakhs)",
-        y="Predicted Sales",
-        markers=True,
-        template="plotly_white"
-    )
-    fig1.update_traces(line_color="#2E86C1")
-    st.plotly_chart(fig1, use_container_width=True)
-
-    # Chart 2: Competitor discount vs sales
-    discount_range = np.linspace(0, 50, 15)
-    df_discount = pd.DataFrame({
-        "Competitor Discount (%)": discount_range,
-        "Predicted Sales": [
-            model.predict(pd.DataFrame({
-                "vehicle_type": [vehicle_type],
-                "fuel_type": [fuel_type],
-                "transmission": [transmission],
-                "engine_size": [engine_size],
-                "mileage": [mileage],
-                "year": [year],
-                "region": [region],
-                "marketing_spend": [marketing_spend],
-                "previous_sales": [previous_sales],
                 "competitor_discount": [d]
-            }).reindex(columns=expected_cols, fill_value=np.nan))[0]
-            for d in discount_range
-        ]
-    })
-    fig2 = px.bar(
-        df_discount,
-        x="Competitor Discount (%)",
-        y="Predicted Sales",
-        template="plotly_white",
-        color="Predicted Sales",
-        color_continuous_scale="Blues"
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+            }).reindex(columns=exp_cols, fill_value=np.nan))[0]
 
-# -----------------------------
-# 🧾 FOOTER
-# -----------------------------
+    fig_heat = px.imshow(
+        heat_data,
+        x=[f"{d:.0f}%" for d in d_vals],
+        y=[f"₹ {m:.0f} L" for m in m_vals],
+        color_continuous_scale="Tealrose",
+        labels=dict(x="Competitor Discount", y="Marketing Spend", color="Predicted Sales"),
+    )
+    st.plotly_chart(fig_heat, use_container_width=True)
+
 st.divider()
 st.caption("Built with 💙 for the Smart Enterprise Modernization Hackathon | Powered by Streamlit & AWS S3")
