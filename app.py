@@ -137,7 +137,7 @@ if predict_button:
         unsafe_allow_html=True
     )
 
-    # -----------------------------
+        # -----------------------------
     # 🌈 BUSINESS VISUALS
     # -----------------------------
     st.subheader("📊 Business Impact Simulations")
@@ -177,15 +177,17 @@ if predict_button:
     )
     st.plotly_chart(fig_line, use_container_width=True)
 
-    # Heatmap for quick business overview
-    st.markdown("### 🔥 Sales Sensitivity Heatmap")
-    m_vals = np.linspace(5, 100, 10)
-    d_vals = np.linspace(0, 50, 10)
-    heat_data = np.zeros((len(m_vals), len(d_vals)))
+    # 🎯 NEW GRAPH: Profit Sensitivity Bubble Chart
+    st.markdown("### 💹 Profit Sensitivity Overview")
 
-    for i, m in enumerate(m_vals):
-        for j, d in enumerate(d_vals):
-            heat_data[i, j] = model.predict(pd.DataFrame({
+    # Create expanded simulation grid
+    marketing_vals = np.linspace(5, 100, 25)
+    discount_vals = np.linspace(0, 50, 25)
+    bubble_data = []
+
+    for m in marketing_vals:
+        for d in discount_vals:
+            pred_sale = model.predict(pd.DataFrame({
                 "vehicle_type": [vehicle_type],
                 "fuel_type": [fuel_type],
                 "transmission": [transmission],
@@ -198,14 +200,30 @@ if predict_button:
                 "competitor_discount": [d]
             }).reindex(columns=exp_cols, fill_value=np.nan))[0]
 
-    fig_heat = px.imshow(
-        heat_data,
-        x=[f"{d:.0f}%" for d in d_vals],
-        y=[f"₹ {m:.0f} L" for m in m_vals],
-        color_continuous_scale="Tealrose",
-        labels=dict(x="Competitor Discount", y="Marketing Spend", color="Predicted Sales"),
+            bubble_data.append({"Marketing Spend": m, "Competitor Discount": d, "Predicted Sales": pred_sale})
+
+    df_bubble = pd.DataFrame(bubble_data)
+
+    fig_bubble = px.scatter(
+        df_bubble,
+        x="Marketing Spend",
+        y="Competitor Discount",
+        size="Predicted Sales",
+        color="Predicted Sales",
+        color_continuous_scale="RdYlBu_r",
+        size_max=40,
+        title="Predicted Sales Sensitivity by Marketing Spend & Discount",
+        hover_data={"Predicted Sales": ":.0f"}
     )
-    st.plotly_chart(fig_heat, use_container_width=True)
+    fig_bubble.update_layout(
+        template="plotly_white",
+        title_font=dict(size=20, color="#1F618D"),
+        xaxis_title="Marketing Spend (₹ Lakhs)",
+        yaxis_title="Competitor Discount (%)",
+        plot_bgcolor="#F8F9F9",
+    )
+    st.plotly_chart(fig_bubble, use_container_width=True)
+    
 
 st.divider()
 st.caption("Built with 💙 for the Smart Enterprise Modernization Hackathon | Powered by Streamlit & AWS S3")
